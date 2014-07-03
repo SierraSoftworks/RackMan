@@ -10,6 +10,7 @@ RackMan has been designed to fill the gap between a full-stack cluster toolkit l
  - Support for Upstart
  - Powerful hook support
  - Support for side-by-side deployment
+ - Helpful deployment scripts
 
 ## Setup
 To configure RackMan to run on your server, all you need to do is run an `npm install -g rackman` and then point RackMan to your application's deployment folder by running `rackman /my/app/folder`.
@@ -103,6 +104,25 @@ Deploying couldn't be easier, all you need to do is have a directory structure l
    - .rackman.json
    - .rackhooks.js
   - .rackversion
+
+### Helpers
+We've also included a few helper scripts which should assist you in integrating RackMan with your deployment infrastructure - namely `rackdeploy` and `rackswitch`. These scripts will automatically set the `.rackversion` to the correct value, and optionally allow you to deploy a different set of static resources for serving via your favourite web server.
+
+#### rackdeploy DEPLOYMENT VERSION [STATIC]
+Is used to deploy the contents of the current directory (wherever the script is run from) to *$DEPLOYMENT/$VERSION*, sets `.rackversion` to *$VERSION* and (if it's provided) symlinks *$DEPLOYMENT/$VERSION/$STATIC* to *$DEPLOYMENT/$STATIC* for your web server.
+
+```bash
+# Deploy to /web/apps/myapp/v4 and symlink to /web/apps/myapp/public
+rackdeploy /web/apps/myapp v4 public
+```
+
+#### rackswitch DEPLOYMENT VERSION [STATIC]
+This script works in conjunction with `rackdeploy` to allow quick switching of your deployed application version. It is responsible for updating `.rackdeploy` as well as the public resource symlink to the specified version of your application (that has already been deployed).
+
+```bash
+# Switch back to v3 of myapp and symlink its resources
+rackswitch /web/apps/myapp v3 public
+```
 
 ## Custom Implementations
 As of v2.0 of RackMan, the terminal interface is simply a wrapper around the RackMan core. This allows you to easily create your own deployment wrappers built on top of RackMan. Want a webpage to manage deployments? You can do that!
