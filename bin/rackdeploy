@@ -1,0 +1,42 @@
+ #!/usr/bin/env bash
+
+ echo "RackMan Deployment Script"
+ if [ $# -lt 2 ]; then
+ 	echo "$0 DEPLOY VERSION [STATIC]"
+ 	echo "Deploys the current directory's contents to DEPLOY within a folder called VERSION, and sets .rackversion to VERSION"
+ 	echo ""
+ 	echo " DEPLOY - The directory containing the application's deployments and the .rackversion file"
+ 	echo " VERSION - The version of the application you are deploying, used to generate the target folder and new .rackversion"
+ 	echo " STATIC - Optional static resource folder, will be symlinked to DEPLOY/STATIC for serving by your web server"
+ 	exit 1
+ fi
+
+SOURCE=$(pwd)
+DEPLOY=$1
+VERSION=$2
+STATIC=$3
+
+function success() {
+	echo "DONE"
+}
+
+function error() {
+	echo "FAILED"
+	exit 1
+}
+
+TARGET=$DEPLOY/$VERSION
+
+echo -e "Creating Target Directory ($TARGET)..."
+mkdir -p "$TARGET" && success || error
+
+echo -e "Copying Deployment Files..."
+cp -RT "$SOURCE" "$TARGET" && success || error
+
+echo -e "Bumping .rackversion..."
+echo "$VERSION" > "$DEPLOY/.rackversion" && success || error
+
+if [[ "$STATIC" -ne "" ]]; then
+	echo -e "Linking Static Files..."
+	ln -sf "$TARGET/$STATIC" "$DEPLOY/$STATIC" && success || error
+fi

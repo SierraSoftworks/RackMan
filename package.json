@@ -6,7 +6,11 @@
 	"repository": "https://github.com/sierrasoftworks/rackman",
 
 	"main": "./index.js",
-	"bin": "./bin/rackman",
+	"bin": {
+		"rackman": "./bin/rackman",
+		"rackdeploy": "./bin/rackdeploy",
+		"rackswitch": "./bin/rackswitch"
+	},
 
 	"engines": {
 		"node": ">=0.10"
