@@ -31,7 +31,7 @@ echo -e "Creating Target Directory ($TARGET)..."
 mkdir -p "$TARGET" && success || error
 
 echo -e "Copying Deployment Files..."
-rsync -aCWtd "$SOURCE/" "$TARGET" && success || error
+rsync -aWtd --exclude=.git --include='.rack*' "$SOURCE/" "$TARGET" && success || error
 
 echo -e "Bumping .rackversion..."
 echo "$VERSION" > "$DEPLOY/.rackversion" && success || error
