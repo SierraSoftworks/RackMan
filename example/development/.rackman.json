@@ -1,0 +1,12 @@
+{
+	"server": "server.js",
+	"timeout": 30000,
+	"reload": 3600000,
+	"ports": [3000, 3001, 3002],
+	"watch": [
+		"server.js"
+	],
+	"environment": {
+		"env": "testing"
+	}
+}
