@@ -35,7 +35,7 @@ fi
 echo -e "Bumping .rackversion..."
 echo "$VERSION" > "$DEPLOY/.rackversion" && success || error
 
-if [[ "$STATIC" -ne "" ]]; then
+if [[ "$STATIC" != "" ]]; then
 	echo -e "Linking Static Files..."
 	ln -sf "$TARGET/$STATIC" "$DEPLOY/$STATIC" && success || error
 fi
