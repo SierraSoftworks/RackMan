@@ -30,7 +30,7 @@ TARGET=$DEPLOY/$VERSION
 echo -e "Creating Target Directory ($TARGET)..."
 mkdir -p "$TARGET" && success || error
 
-if [! -d "$TARGET" ]; then
+if [ ! -d "$TARGET" ]; then
 	echo -e "Copying Deployment Files..."
 	cp -RTf "$SOURCE/" "$TARGET" && success || error
 	#rsync -aWtd --exclude=.git --include='.rack*' "$SOURCE/" "$TARGET" && success || error
