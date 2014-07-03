@@ -37,5 +37,5 @@ echo "$VERSION" > "$DEPLOY/.rackversion" && success || error
 
 if [[ "$STATIC" != "" ]]; then
 	echo -e "Linking Static Files..."
-	ln -sf "$TARGET/$STATIC" "$DEPLOY/$STATIC" && success || error
+	ln -sfT "$TARGET/$STATIC" "$DEPLOY/$STATIC" && success || error
 fi
