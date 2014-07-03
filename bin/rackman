@@ -71,5 +71,5 @@ process.on('SIGINT', function() {
 	});
 });
 
-process.on('SIGHUP', master.reload);
-process.on('SIGUSR2', master.reload);
+process.on('SIGHUP', master.reload.bind(master));
+process.on('SIGUSR2', master.reload.bind(master));
