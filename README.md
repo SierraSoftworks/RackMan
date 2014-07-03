@@ -81,4 +81,4 @@ The primary advantages of RackMan are its flexibility and simplicity, allowing y
 
 This makes RackMan compatible, out of the box, with all common WebSocket libraries including [socket.io](http://socket.io) and [primus](https://github.com/primus/primus). It also means that there is less in the way of requests being processed, and the lightweight nature of Node's cluster framework ensures minimal performance penalties are incurred.
 
-In addition to this, we've provided example NGINX configurations and Upstarts scripts which you can easily modify - helping to minimize your setup time.
+In addition to this, we've provided example NGINX configurations and Upstart scripts which you can easily modify - helping to minimize your setup time.
