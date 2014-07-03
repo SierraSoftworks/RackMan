@@ -1,2 +1,75 @@
 #!/usr/bin/env node
-require('../lib/Master.js');
+var path = require('path'),
+	fs = require('fs'),
+	colors = require('colors'),
+	cluster = require('cluster');
+
+if(!cluster.isMaster) return;
+var Master = require('../lib/Master.js');
+
+var project = process.argv[2];
+if(!project) {
+	console.error("No project specified in command line, please try again with a valid project".red);
+	console.log("USAGE: rackman PROJECT [VERSION]");
+	return process.exit(1);
+}
+
+var projectHome = path.resolve(process.cwd(), project);
+if(!fs.statSync(projectHome).isDirectory()) {
+	console.error("Invalid project specified, please try again with a valid project".red);
+	return process.exit(1);
+}
+
+var version = process.argv.length > 3 && process.argv[3];
+if(!version) try {
+	fs.statSync(path.resolve(projectHome, '.rackversion'));
+	version = true;
+} catch(ex) {
+	version = false;
+}
+
+var master = new Master(projectHome, version);
+
+console.log('RackMan Cluster Ready'.bold);
+console.log("You can reload the server manually using `\033[1mkill -SIGHUP %d\033[0m` or `\033[1mkill -SIGUSR2 %d\033[0m`", process.pid, process.pid);
+master.start();
+
+master.on('reloading', function() {
+	console.log("Reloading Workers".bold);
+});
+
+master.on('modified', function(file, change) {
+	console.log(" - %s was %sd".cyan, file, change);
+});
+
+master.on('workerStarted', function(manager, worker) {
+	console.log('Worker %d Now Listening on Port %d'.green, worker.id, manager.port);
+});
+
+master.on('workerShutdown', function(manager, worker) {
+	console.log("Worker %d Has Shutdown".blue, worker.id);
+});
+
+master.on('workerKilling', function(manager, worker) {
+	console.warn("Worker %d Shutdown Timeout Expired - Killing".yellow, worker.id);
+});
+
+master.on('workerCrashed', function(manager, worker) {
+	console.error("Worker %d Failed To Start Successfully".red, worker.id);
+});
+
+master.on('error', function(err) {
+	console.error(err.message.red);
+	process.exit(1);
+});
+
+process.on('SIGINT', function() { 
+	console.log("RackMan Cluster Terminating".yellow);
+	master.stop(function() {
+		console.log("All Workers Shutdown".yellow);
+		process.exit(0);
+	});
+});
+
+process.on('SIGHUP', master.reload);
+process.on('SIGUSR2', master.reload);
