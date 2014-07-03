@@ -68,7 +68,7 @@ module.exports = {
  - **cluster.changed** - Triggered whenever a file change is detected, includes the name of the file which was changed
  - **worker.started** - Triggered whenever a worker is successfully started
  - **worker.shutdown** - Triggered whenever a worker is successfully shutdown
- - **worker.crashed** - Triggered whenevr a worker fails to start correctly or closes prematurely
+ - **worker.crashed** - Triggered whenever a worker fails to start correctly or closes prematurely
 
 ### Important Notes
 RackMan makes use of an intelligent file watching system which attempts to aggregate changes to the file system into a single operation, it does this by waiting for a second after the last file operation is detected before triggering a reload of the server. This means that copy operations shouldn't result in the server spamming reloads - making them safe to do without first closing down the server.
