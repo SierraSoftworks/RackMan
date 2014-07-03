@@ -1,4 +1,4 @@
-# RackMan
+# RackMan [![](https://badge.fury.io/js/rackman.png)](https://npmjs.org/package/rackman)
 **A node process controller designed to enable horizontally scalable deployments**
 
 RackMan has been designed to fill the gap between a full-stack cluster toolkit like [amino](https://www.npmjs.org/package/amino) and custom cluster implementations run behind a load balander. The primary objective is to provide many of the advantages of a full stack cluster toolkit while still allowing a load balancer to work effectively for protocols like WebSockets (which are notoriously poorly handled by such load balancers) and permitting zero-downtime updates.
@@ -123,6 +123,31 @@ This script works in conjunction with `rackdeploy` to allow quick switching of y
 # Switch back to v3 of myapp and symlink its resources
 rackswitch /web/apps/myapp v3 public
 ```
+
+### Example Continuous Integration Setup
+Continous Integration (and by extension, Continuous Deployment) are incredibly powerful tools which can help you develop, test and deploy your applications faster than ever before - resulting in faster fixes and overall better customer satisfaction. RackMan has been designed from the outset to support integration with all common continous integration systems.
+
+```bash
+# Checkout the latest code (your CI server will generally do this automatically)
+git reset --hard && git pull
+
+# Install all testing dependencies
+npm install
+
+# Run your tests
+npm test
+
+# If all tests pass then go ahead and deploy
+rackdeploy /web/apps/myapp $CI_BUILD_REF public
+```
+
+If you then notice that one of your monkies didn't test his new feature properly and managed to break something...
+
+```bash
+rackswitch /web/apps/myapp $LAST_GOOD_REF public
+```
+
+And best of all, if you're using RackMan to manage your app by running `rackman /web/apps/myapp` you never need to worry about reloading your server, it's all handled automatically - so no need to give your CI runner select sudo permissions so it can use upstart to reload your server. So really, there's no reason whatsoever to be afraid of continous deployment anymore...
 
 ## Custom Implementations
 As of v2.0 of RackMan, the terminal interface is simply a wrapper around the RackMan core. This allows you to easily create your own deployment wrappers built on top of RackMan. Want a webpage to manage deployments? You can do that!
