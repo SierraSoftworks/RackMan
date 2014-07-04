@@ -7,14 +7,16 @@
   "main": "./index.js",
   "bin": {
     "rackman": "./bin/rackman",
-    "rackdeploy": "./bin/rackdeploy",
-    "rackswitch": "./bin/rackswitch"
+    "rackadmin": "./bin/rackadmin"
   },
   "engines": {
     "node": ">=0.10"
   },
   "preferGlobal": true,
   "dependencies": {
-    "colors": "*"
+    "colors": "*",
+    "yargs": "*",
+    "ncp": "*",
+    "rimraf": "*"
   }
 }

@@ -1,0 +1,149 @@
+#!/usr/bin/env node
+var colors = require('colors');
+var Admin = require('../lib/Admin');
+
+var allowedOperations = ['setup', 'deploy', 'switch', 'checkout', 'rollback', 'clean', 'head', 'version', 'list', 'versions'];
+
+var yargs = require('yargs')
+	.usage([
+		"RackMan Admin Toolkit".bold,
+		"Usage: rackadmin operation project [options]",
+		"",
+		"Versions:",
+		  "  <version>  A unique version identifier string",
+		  "  #<index>   The absolute index of the version (0 is the earliest)",
+		  "  ^<offset>  The relative offset from the current head version, positive goes earlier"
+		].join('\n'))
+
+	.example("rackadmin setup /web/myapp -s public", "Configure a deployment's .rack.json file automatically")
+
+	.example("rackadmin deploy /web/myapp", "Deploy to a random version ID")
+	.example("rackadmin deploy /web/myapp v2", "Deploy to a specific version ID")
+
+	.example("rackadmin switch /web/myapp v1", "Switch to a specific version")
+	.example("rackadmin switch /web/myapp #0", "Switch to specified absolute version index (in this case, the first deployed version)")
+	.example("rackadmin switch /web/myapp ^4", "Switch to the specified relative version index (in this case, 4 versions before the current one)")
+
+	.example("rackadmin rollback /web/myapp", "Rollback a single version, the same as running switch ^1")
+
+	.example('rackadmin clean /web/myapp v1', "Remove all versions prior to the specified version identifier")
+	.example('rackadmin clean /web/myapp #0', "Remove all versions prior to the specified absolute version index")
+	.example('rackadmin clean /web/myapp ^4', "Remove all versions prior to the specified relative version index")
+
+	.example("rackadmin head /web/myapp", "Get the ID of the currently deployed version")
+	.example("rackadmin version /web/myapp", "Get the ID of the currently deployed version")
+
+	.example("rackadmin list /web/myapp", "List all available deployed versions")
+	.example("rackadmin versions /web/myapp", "List all available deployed versions")
+
+	.describe('h', "Show this help documentation").alias('h', 'help').boolean('h')
+	.describe('s', "Static resource directory name").alias('s', 'resources').requiresArg('s')
+
+	.check(function(args) {
+		if(!args._.length) {
+			args.h = true;
+			return;
+		}
+
+		args.operation = args._[0];
+		args._ = args._.slice(1);
+
+		if(args.operation == 'help') {
+			args.h = true;
+			return;
+		}
+
+		if(!~allowedOperations.indexOf(args.operation)) throw new Error(args.operation + " is not a valid operation name");
+
+		if(!Admin.isProject(process.cwd()))
+			args.source = process.cwd();
+		else if(!Admin.isProject(args._[0]))
+			args._.unshift(process.cwd());
+
+		if(args._.length) args.project = args._.shift();
+		if(args._.length) args.version = args._.shift();
+		
+		return true;
+	}),
+	args = yargs.argv;
+
+if(args.h) return console.log(yargs.help());
+
+var admin = new Admin(args.project || process.cwd());
+
+switch(args.operation) {
+	case 'setup':
+		if(admin.valid) return;
+		return admin.setup({
+			resources: args.s || false
+		}, function(err) {
+			if(err) {
+				console.error("%s".red, err.message);
+				return process.exit(1);
+			}
+		});
+
+	case 'deploy':
+		if(!admin.valid) return notSetup();
+		return admin.deploy(args.source, args.version, function(err, version) {
+			if(err) {
+				console.error("%s".red, err.message);
+				return process.exit(1);
+			}
+
+			console.log("%s", version);
+		});
+
+	case 'switch':
+	case 'checkout':
+		if(!admin.valid) return notSetup();
+		return admin.checkout(args.version, function(err, version) {
+			if(err) {
+				console.error("%s".red, err.message);
+				return process.exit(1);
+			}
+
+			console.log("%s", version);
+		});
+
+	case 'rollback':
+		if(!admin.valid) return notSetup();
+		return admin.checkout('^1', function(err, version) {
+			if(err) {
+				console.error("%s".red, err.message);
+				return process.exit(1);
+			}
+
+			console.log("%s", version);
+		});
+
+	case 'clean':
+		if(!admin.valid) return notSetup();
+		return admin.clean(args.version, function(err, removed) {
+			if(err) {
+				console.error("%s".red, err.message);
+				return process.exit(1);
+			}
+
+			removed.forEach(function(version) { console.log("%s", version); });
+		});
+
+	case 'head':
+	case 'version':
+		if(!admin.valid) return notSetup();
+		if(!admin.config.head) return;
+		return console.log('%s', admin.config.head);
+
+	case 'list':
+	case 'versions':
+		if(!admin.valid) return notSetup();
+		return admin.config.versions.forEach(function(version) {
+			if(version == admin.config.head) return console.log(version.green);
+			return console.log(version);
+		});
+}
+
+function notSetup() {
+	console.error("%s is not a valid deployment".red, args.project);
+	return process.exit(1);
+}
