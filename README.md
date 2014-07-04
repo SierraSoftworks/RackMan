@@ -95,59 +95,49 @@ Deploying couldn't be easier, all you need to do is have a directory structure l
 
  - /web/apps/myapp/
   - v1
-   - .rackman.json
-   - .rackhooks.js
+    - .rackman.json
+    - .rackhooks.js
   - v2
-   - .rackman.json
-   - .rackhooks.js
+    - .rackman.json
+    - .rackhooks.js
   - v3
-   - .rackman.json
-   - .rackhooks.js
-  - .rackversion
+    - .rackman.json
+    - .rackhooks.js
+  - .rack.json
 
-### Helpers
-We've also included a few helper scripts which should assist you in integrating RackMan with your deployment infrastructure - namely `rackdeploy` and `rackswitch`. These scripts will automatically set the `.rackversion` to the correct value, and optionally allow you to deploy a different set of static resources for serving via your favourite web server.
+### RackAdmin
+We've also included a helper utility called `rackadmin` which is designed to automate most of your deployment management tasks, allowing you to easily deploy, switch and clean versions of your application while supporting cool features like rollbacks and automatic link management. In order to support it, you'll need a `.rack.json` file in your deployment directory - this can be created by running `rackadmin setup -s {resource_folder}` from within your deployment folder.
 
-#### rackdeploy DEPLOYMENT VERSION [STATIC]
-Is used to deploy the contents of the current directory (wherever the script is run from) to *$DEPLOYMENT/$VERSION*, sets `.rackversion` to *$VERSION* and (if it's provided) symlinks *$DEPLOYMENT/$VERSION/$STATIC* to *$DEPLOYMENT/$STATIC* for your web server.
+From then on, all you need to do to deploy your application is run `rackadmin deploy /web/apps/myapp v4` and it'll take care of the rest, have an issue and want to go back to the previous version? Just run `rackadmin rollback /web/apps/myapp` or `cd /web/apps/myapp && rackadmin rollback` and it'll automatically update your static resource pointer and switch to your last deployed version.
 
-```bash
-# Deploy to /web/apps/myapp/v4 and symlink to /web/apps/myapp/public
-rackdeploy /web/apps/myapp v4 public
-```
+#### Configuring RackAdmin
+Configuration of your RackAdmin deployments is very straightforward, and can be done by running the `rackadmin setup` command which works in much the same way as `git init`. If you require static resources, you will need to tell `rackadmin setup` about them by specifying the `-s` flag during setup.
 
-#### rackswitch DEPLOYMENT VERSION [STATIC]
-This script works in conjunction with `rackdeploy` to allow quick switching of your deployed application version. It is responsible for updating `.rackdeploy` as well as the public resource symlink to the specified version of your application (that has already been deployed).
+For example, if you store static resources in the *public* folder within your application deployments, then you should run `rackadmin setup -s public`. RackAdmin will then always ensure that new deployments have their *public* directory symlinked to the *public* directory within your deployment.
 
-```bash
-# Switch back to v3 of myapp and symlink its resources
-rackswitch /web/apps/myapp v3 public
-```
+#### Deploying Applications
+RackAdmin allows you to easily deploy different versions of your application using the `rackadmin deploy` command, which will automatically handle copying of the files and checking out of the latest version. There are a few things to keep in mind when using it, firstly you should know that it deploys the entire contents (minus .git*) of the current folder (wherever you run the command from) to the deployment target you specify. You can also opt to either specify a version number for tracking purposes, or leave it out and let `rackadmin` generate one for you.
 
-### Example Continuous Integration Setup
-Continous Integration (and by extension, Continuous Deployment) are incredibly powerful tools which can help you develop, test and deploy your applications faster than ever before - resulting in faster fixes and overall better customer satisfaction. RackMan has been designed from the outset to support integration with all common continous integration systems.
+For example, deploying from your continous integration server can be achieved by running `rackadmin deploy /web/apps/myapp $CI_BUILD_REF` from within your build directory.
 
-```bash
-# Checkout the latest code (your CI server will generally do this automatically)
-git reset --hard && git pull
+#### Switching Deployed Versions
+One of the most powerful aspects of RackAdmin is its ability to quickly switch the version of your application that has been deployed, this can be done by using the `rackadmin switch` or `rackadmin checkout` commands. These commands can be run from within the deployment folder, or you can opt to specify the deployment as part of their arguments.
 
-# Install all testing dependencies
-npm install
+There are a number of ways you can checkout versions, these include using the version identifier, an absolute deployment index (starting at 0 for your first deployed version) or a relative offset based on the current version.
 
-# Run your tests
-npm test
+For example, if you wanted to switch to *v2* you could run `rackadmin switch v2` or `rackadmin switch /web/apps/myapp v2`. But you could also want to go to the first deployment you have by running `rackadmin switch #0`, or perhaps you want to go back 3 versions? `rackadmin switch ^3`.
 
-# If all tests pass then go ahead and deploy
-rackdeploy /web/apps/myapp $CI_BUILD_REF public
-```
+We've also aliased `rackadmin switch ^1` as `rackadmin rollback` to make it easier to remember.
 
-If you then notice that one of your monkies didn't test his new feature properly and managed to break something...
+#### Cleaning Up Your Deployments
+If you're routinely making deployments, you'll probably reach a point at which you don't want or need all the legacy versions. Luckily RackAdmin has a tool to help you clean up your deployment folder by removing any orphaned versions (versions which have been removed from the deployment database) as well as versions prior to a specified deployment.
 
-```bash
-rackswitch /web/apps/myapp $LAST_GOOD_REF public
-```
+Cleaning up of only orphaned versions can be done by running `rackadmin clean`, while if you wish to also remove all versions preceeding a specific one you can use `rackadmin clean v2`, `rackadmin clean #1` or `rackadmin clean ^2` to remove them as well.
 
-And best of all, if you're using RackMan to manage your app by running `rackman /web/apps/myapp` you never need to worry about reloading your server, it's all handled automatically - so no need to give your CI runner select sudo permissions so it can use upstart to reload your server. So really, there's no reason whatsoever to be afraid of continous deployment anymore...
+RackAdmin won't allow you to remove your currently deployed version, but you should take care none-the-less when running `rackadmin clean` to make sure you don't lose data you'd rather keep.
+
+#### Deployment Information
+You can also use RackAdmin to get a bit of information about your deployment, like the currently deployed version using `rackadmin head` or `rackadmin version`, or a list of all the versions you have available with `rackadmin list` or `rackadmin versions`.
 
 ## Custom Implementations
 As of v2.0 of RackMan, the terminal interface is simply a wrapper around the RackMan core. This allows you to easily create your own deployment wrappers built on top of RackMan. Want a webpage to manage deployments? You can do that!
