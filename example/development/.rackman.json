@@ -4,7 +4,8 @@
 	"reload": 3600000,
 	"ports": [3000, 3001, 3002],
 	"watch": [
-		"server.js"
+		"server.js",
+		"templates/*.js"
 	],
 	"environment": {
 		"env": "testing"

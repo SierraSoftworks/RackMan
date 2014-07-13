@@ -27,7 +27,7 @@ All configuration parameters for RackMan are set in the `.rackman.json` file wit
 	"watch": [
 		"server.js",
 		"routes/*.js",
-		"models"
+		"models/*"
 	],
 	"timeout": 60000,
 	"reload": 3600000,
@@ -61,6 +61,8 @@ module.exports = {
  - **timeout** - The amount of time to wait between requesting a worker shutdown and forcing it to be killed, this can help prevent in-flight requests from being dropped while still ensuring that rogue workers aren't left alive.
  - **reload** - The amount of time between forced reloads, useful for preventing memory leaks
  - **environment** - Any environment variables you would like to provide to your worker processes
+
+The `watch` option uses [minimatch](https://github.com/isaacs/minimatch) to process watch paths, so you can easily specify complex monitor expressions. Keep in mind that these are used primarily for on-the-fly reloading of your application during development.
 
 ### Hooks
  - **cluster.started** - Triggered when RackMan is first started up, can be used to report when your server starts

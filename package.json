@@ -1,6 +1,6 @@
 {
   "name": "rackman",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "author": "Benjamin Pannell <admin@sierrasoftworks.com>",
   "description": "A node cluster manager designed for horizontally scaled systems, with a focus on compatibility",
   "repository": "https://github.com/sierrasoftworks/rackman",
@@ -17,6 +17,8 @@
     "colors": "*",
     "yargs": "*",
     "ncp": "*",
-    "rimraf": "*"
+    "rimraf": "*",
+    "gaze": "*",
+    "minimatch": "*"
   }
 }

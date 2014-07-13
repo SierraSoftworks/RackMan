@@ -39,7 +39,7 @@ master.on('reloading', function() {
 });
 
 master.on('modified', function(file, change) {
-	console.log(" - %s was %sd".cyan, file, change);
+	console.log(" - %s was %s".cyan, file, change);
 });
 
 master.on('workerStarted', function(manager, worker) {
