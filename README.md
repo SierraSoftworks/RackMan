@@ -60,12 +60,15 @@ module.exports = {
 };
 ```
 
+### Enviroment Variables
+RackMan populates a number of environment variables which you can make use of within your application for diagnostic purposes. These include **port** which is also used for binding your worker to the correct port, and **version** which reflects the deployed version in side-by-side deployments and will be set to `false` in standard deployments.
+
 ### Configuration Options
  - **server** - The file used to host the server, should run `.listen(process.env.port)`
  - **ports** - An array of ports to listen on, RackMan will ensure there is always a worker listening on each port
  - **watch** - An array of watch directives which will be used to detect changes to your code and reload your application accordingly
  - **timeout** - The amount of time to wait between requesting a worker shutdown and forcing it to be killed, this can help prevent in-flight requests from being dropped while still ensuring that rogue workers aren't left alive.
- - **reload** - The amount of time between forced reloads, useful for preventing memory leaks
+ - **reload** - The amount of time between forced reloads, useful to help reduce the effect of memory leaks (if you've got any) in your applications.
  - **environment** - Any environment variables you would like to provide to your worker processes
 
 The `watch` option uses [minimatch](https://github.com/isaacs/minimatch) to process watch paths, so you can easily specify complex monitor expressions. Keep in mind that these are used primarily for on-the-fly reloading of your application during development.
