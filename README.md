@@ -18,6 +18,12 @@ To configure RackMan to run on your server, all you need to do is run an `npm in
 All configuration parameters for RackMan are set in the `.rackman.json` file within your application's directory, allowing you to easily change configuration options when deploying your application without the need make modifications to your server.
 
 ### Example Configuration
+```js
+require('http').createServer(function(req, res) {
+	res.writeHead(200, {'Content-Type': 'text/plain'});
+	return res.end('RackMan!\nVersion ' + process.env.version + '\n');
+}).listen(process.env.port);
+```
 
 #### .rackman.json
 ```json
