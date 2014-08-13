@@ -22,7 +22,7 @@ if(!fs.statSync(projectHome).isDirectory()) {
 
 var version = process.argv.length > 3 && process.argv[3];
 if(!version) try {
-	fs.statSync(path.resolve(projectHome, '.rackversion'));
+	fs.statSync(path.resolve(projectHome, '.rack.json'));
 	version = true;
 } catch(ex) {
 	version = false;
