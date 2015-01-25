@@ -19,6 +19,7 @@
     "ncp": "*",
     "rimraf": "*",
     "watch": "*",
-    "minimatch": "*"
+    "minimatch": "*",
+    "lodash": "*"
   }
 }
