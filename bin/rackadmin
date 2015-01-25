@@ -78,7 +78,7 @@ switch(args.operation) {
 			resources: args.s || false
 		}, function(err) {
 			if(err) {
-				console.error("%s".red, err.message);
+				console.error("%s".red, err.message || err);
 				return process.exit(1);
 			}
 		});
@@ -87,7 +87,7 @@ switch(args.operation) {
 		if(!admin.valid) return notSetup();
 		return admin.deploy(args.source, args.version, function(err, version) {
 			if(err) {
-				console.error("%s".red, err.message);
+				console.error("%s".red, err.message || err);
 				return process.exit(1);
 			}
 
@@ -99,7 +99,7 @@ switch(args.operation) {
 		if(!admin.valid) return notSetup();
 		return admin.checkout(args.version, function(err, version) {
 			if(err) {
-				console.error("%s".red, err.message);
+				console.error("%s".red, err.message || err);
 				return process.exit(1);
 			}
 
@@ -110,7 +110,7 @@ switch(args.operation) {
 		if(!admin.valid) return notSetup();
 		return admin.checkout('^1', function(err, version) {
 			if(err) {
-				console.error("%s".red, err.message);
+				console.error("%s".red, err.message || err);
 				return process.exit(1);
 			}
 
@@ -121,7 +121,7 @@ switch(args.operation) {
 		if(!admin.valid) return notSetup();
 		return admin.clean(args.version, function(err, removed) {
 			if(err) {
-				console.error("%s".red, err.message);
+				console.error("%s".red, err.message || err);
 				return process.exit(1);
 			}
 
