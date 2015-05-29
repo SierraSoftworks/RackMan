@@ -15,7 +15,7 @@ var yargs = require('yargs')
 		  "  ^<offset>  The relative offset from the current head version, positive goes earlier"
 		].join('\n'))
 
-	.example("rackadmin setup /web/myapp -s public", "Configure a deployment's .rack.json file automatically")
+	.example("rackadmin setup /web/myapp -s live", "Configure a deployment's .rack.json file automatically")
 
 	.example("rackadmin deploy /web/myapp", "Deploy to a random version ID")
 	.example("rackadmin deploy /web/myapp v2", "Deploy to a specific version ID")
@@ -75,7 +75,7 @@ switch(args.operation) {
 	case 'setup':
 		if(admin.valid) return;
 		return admin.setup({
-			resources: args.s || false
+			resourceLink: args.s || false
 		}, function(err) {
 			if(err) {
 				console.error("%s".red, err.message || err);
