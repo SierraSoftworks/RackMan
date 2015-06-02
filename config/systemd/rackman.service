@@ -1,0 +1,6 @@
+[Unit]
+Description=RackMan Node.js Service Manager
+
+[Service]
+TimeoutStartSec=0
+ExecStart=/usr/local/bin/node /usr/local/bin/rackman /web/MyProject
