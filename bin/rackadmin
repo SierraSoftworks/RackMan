@@ -16,7 +16,7 @@ var yargs = require('yargs')
 		].join('\n'))
 
 	.example("rackadmin setup /web/myapp -s live", "Configure a deployment's .rack.json file automatically")
-	
+
 	.example("rackadmin register /web/myapp v1", "Register an existing version if you are using a custom deployment step")
 
 	.example("rackadmin deploy /web/myapp", "Deploy to a random version ID")
@@ -65,7 +65,7 @@ var yargs = require('yargs')
 
 		if(args._.length) args.project = args._.shift();
 		if(args._.length) args.version = args._.shift();
-		
+
 		return true;
 	}),
 	args = yargs.argv;
@@ -85,7 +85,7 @@ switch(args.operation) {
 				return process.exit(1);
 			}
 			});
-		
+
 	case 'register':
 		if (!admin.valid) return notSetup();
 		return admin.register(args.version, function (err, version) {

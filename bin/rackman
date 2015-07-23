@@ -63,7 +63,7 @@ master.on('error', function(err) {
 	process.exit(1);
 });
 
-process.on('SIGINT', function() { 
+process.on('SIGINT', function() {
 	console.log("RackMan Cluster Terminating".yellow);
 	master.stop(function() {
 		console.log("All Workers Shutdown".yellow);
