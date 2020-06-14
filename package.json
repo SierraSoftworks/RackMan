@@ -23,7 +23,7 @@
     "ncp": "^2.0.0",
     "rimraf": "^2.3.4",
     "watch": "~0.16.0",
-    "minimatch": "^2.0.8",
+    "minimatch": "^3.0.4",
     "lodash": "^3.9.3",
     "bluebird": "^2.9.27"
   }
